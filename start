@@ -2,6 +2,8 @@ import csv
 import pandas 
 import openai
 
+openai.api_key = "your_api_key_here"
+
 # reading the CSV file
 # remember GPT can not read csv
 csvFile = pandas.read_csv('whole_data.csv')
