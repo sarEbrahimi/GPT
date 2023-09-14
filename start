@@ -1,0 +1,33 @@
+import csv
+import pandas 
+import openai
+# reading the CSV file
+# remember GPT can not read csv
+csvFile = pandas.read_csv('whole_data.csv')
+ 
+# displaying the contents of the CSV file
+print(csvFile)
+type(csvFile)
+industry = csvFile["Industries"]
+description = csvFile["Full_Description"]
+print(description)
+#1.initialize the gpt model
+def chat_with_chatgpt(prompt, model="gpt-3.5-turbo"):
+    response = openai.Completion.create(
+        engine=model,
+        prompt=prompt,
+        max_tokens=100,
+        n=1,
+        stop=None,
+        temperature=0.5,
+    )
+
+    message = response.choices[0].text.strip()
+    return message
+responce = []
+#2.define the loop
+for i in range(7176): 
+  user_prompt = 'is industry[i] appropriate for description[i]?'
+  chatbot_response = chat_with_chatgpt(user_prompt)
+  responce.append(chatbot_response)
+
