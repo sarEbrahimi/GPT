@@ -5,49 +5,45 @@ import pandas
 import openai
 
 # 2
-openai.api_key = "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"
+openai.api_key = "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"
 
 # 3
-import csv
+# use response as a list
 
-# opening the CSV file
-with open('whole_data.csv', mode ='r')as file:
-
-  # reading the CSV file
-  csvFile = csv.reader(file)
-
-  # displaying the contents of the CSV file
-  # for loop to find our columns
-  for lines in csvFile:
-        print('IT IS 3:industry',lines[3])
-        print('IT IS 4:description',lines[4])
-
-def get_response(prompt, model = "gpt-3.5-turbo"):
+def get_response(prompts: list, model = "gpt-3.5-turbo"):
   responses = []
 
-
+  
   restart_sequence = "\n"
-  with open('whole_data.csv', 'r') as csv_file:
-    csv_reader = csv.reader(csv_file)
 
-    # Skip the header row if necessary
-    next(csv_reader)
+  for item in prompts:
 
-    # Iterate over each row in the CSV file
-    for row in csv_reader:
-        # Assuming your CSV has a column named '-------'
-        question = row[4]
-        prompt = f"do you think for {question} how could we label it ?"
-        #question = row[description]
-        response = openai.Completion.create(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0,
-        max_tokens=20,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-        )
-        responses.append(response['choices'][0]['message']['content'])
-        print(responses.text)
+      response = openai.Completion.create(
+      model=model,
+      messages=[{"role": "user", "content": prompt}],
+      temperature=0,
+      max_tokens=20,
+      top_p=1,
+      frequency_penalty=0,
+      presence_penalty=0
+    )
+
+      responses.append(response['choices'][0]['message']['content'])
+
   return responses
+# 4
+# make a list of prompts
+prompts = []
+# read csv
+with open('whole_data.csv', 'r') as csv_file:
+  csv_reader = csv.reader(csv_file)
+  next(csv_reader)
+  for row in csv_reader:
+    question = row[4]
+    prompt = f"do you think for {question} how could we label it ?"
+    prompts.append(prompt)
+    
+
+print(prompts) 
+
+res = get_response(prompts, model= "gpt-3.5-turbo")
