@@ -1,38 +1,53 @@
+# 1
+!pip install openai
 import csv
-import pandas 
+import pandas
 import openai
 
-openai.api_key = "your_api_key_here"
+# 2
+openai.api_key = "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"
 
-# reading the CSV file
-# remember GPT can not read csv
-csvFile = pandas.read_csv('whole_data.csv')
- 
-# displaying the contents of the CSV file
-print(csvFile)
-type(csvFile)
-industry = csvFile["Industries"]
-description = csvFile["Full_Description"]
-print(description)
+# 3
+import csv
 
-#1.initialize the gpt model
-def chat_with_chatgpt(prompt, model="gpt-3.5-turbo"):
-    response = openai.Completion.create(
-        engine=model,
-        prompt=prompt,
-        max_tokens=100,
-        n=1,
-        stop=None,
-        temperature=0.5,
-    )
+# opening the CSV file
+with open('whole_data.csv', mode ='r')as file:
 
-    message = response.choices[0].text.strip()
-    return message
-responce = []
+  # reading the CSV file
+  csvFile = csv.reader(file)
 
-#2.define the loop
-for i in range(7176): 
-  user_prompt = 'is industry[i] appropriate for description[i]?'
-  chatbot_response = chat_with_chatgpt(user_prompt)
-  responce.append(chatbot_response)
+  # displaying the contents of the CSV file
+  # for loop to find our columns
+  for lines in csvFile:
+        print('IT IS 3:industry',lines[3])
+        print('IT IS 4:description',lines[4])
 
+def get_response(prompt, model = "gpt-3.5-turbo"):
+  responses = []
+
+
+  restart_sequence = "\n"
+  with open('whole_data.csv', 'r') as csv_file:
+    csv_reader = csv.reader(csv_file)
+
+    # Skip the header row if necessary
+    next(csv_reader)
+
+    # Iterate over each row in the CSV file
+    for row in csv_reader:
+        # Assuming your CSV has a column named '-------'
+        question = row[4]
+        prompt = f"do you think for {question} how could we label it ?"
+        #question = row[description]
+        response = openai.Completion.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0,
+        max_tokens=20,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+        )
+        responses.append(response['choices'][0]['message']['content'])
+        print(responses.text)
+  return responses
